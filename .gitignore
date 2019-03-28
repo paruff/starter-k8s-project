@@ -1,0 +1,10 @@
+# Vagrant stuff
+boxes/*
+**/.vagrant
+
+
+# Kitchen stuff
+**/.kitchen/
+
+.project
+.DS_Store
