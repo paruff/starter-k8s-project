@@ -1,0 +1,62 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "bento/centos-7.6"
+
+
+#  config.berkshelf.enabled = true
+#  config.berkshelf.berksfile_path = "Berksfile"
+
+config.vm.provision "shell", inline: <<-SHELL
+yum -y update 
+yum -y install python-pip
+pip install --upgrade pip
+pip install awscli
+pip install awscli --upgrade
+# Terraform
+yum -y install unzip git java-1.8.0-openjdk-devel
+wget https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_amd64.zip
+unzip terraform* 
+# add to path
+cp terraform bin/
+
+# chefdk
+wget https://packages.chef.io/files/stable/chefdk/3.8.14/el/7/chefdk-3.8.14-1.el7.x86_64.rpm 
+rpm -Uvh chefdk-3.8.14-1.el7.x86_64.rpm
+
+# docker 
+yum check-update
+curl -fsSL https://get.docker.com/ | sh
+systemctl start docker
+systemctl status docker
+systemctl enable docker
+
+# Virtualbox
+yum -y install gcc dkms make qt libgomp patch 
+yum -y install kernel-headers kernel-devel binutils glibc-headers glibc-devel font-forge
+cd /etc/yum.repo.d/
+wget http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
+yum update
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum install binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms
+
+yum install -y VirtualBox-6.0
+/sbin/rcvboxdrv setup
+
+# vagrant
+yum -y install https://releases.hashicorp.com/vagrant/2.2.4/vagrant_2.2.4_x86_64.rpm
+
+SHELL
+
+end
